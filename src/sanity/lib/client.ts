@@ -1,22 +1,22 @@
 
-
 import { createClient } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
 import { apiVersion, dataset, projectId } from '../env';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
-// Create Sanity client
+// Create the Sanity client
 export const client = createClient({
-  projectId: projectId || 'ys8rw8ln', // Use your environment variables or replace with your project ID
-  dataset: dataset || 'production',  // Use your environment variables or replace with the dataset
-  apiVersion: apiVersion || '2023-01-01',  // Use your API version or the default one
-  useCdn: true,  // Set to false if you want to disable caching
+  projectId: projectId || 'ys8rw8ln', // Fallback to a default project ID if not provided
+  dataset: dataset || 'production', // Fallback to a default dataset if not provided
+  apiVersion: apiVersion || '2023-01-01', // Fallback to a default API version if not provided
+  useCdn: true, // Enable CDN for faster responses
 });
 
-// Image URL builder for image fields in Sanity
+// Initialize the image URL builder
 const builder = imageUrlBuilder(client);
 
-// Function to get image URLs from Sanity
-export const urlFor = (source: any) => builder.image(source).url();
+// Function to generate image URLs
+export const urlFor = (source: SanityImageSource) => builder.image(source).url();
 
-// Export client for use in other parts of the application
+// Default export for the Sanity client
 export default client;

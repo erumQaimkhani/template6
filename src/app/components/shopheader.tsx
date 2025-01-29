@@ -18,7 +18,7 @@ export default function Shopheader() {
             </div>
 
          
-            <div className="relative flex flex-col items-center justify-center h-full text-center text-white">
+            <div className="relative flex flex-col items-center justify-center h-full text-center text-black">
     
                 <Image
                     src="/images/meubl.png"

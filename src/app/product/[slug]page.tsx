@@ -1,6 +1,6 @@
 
-import { urlFor } from "@/sanity/lib/image";
-import { Client } from "@/sanity/lib/client";
+import urlBuilder from "@sanity/image-url";
+import Client from "@/src/sanity/lib/client";
 import { groq } from "next-sanity";
 import Image from "next/image";
 
@@ -29,6 +29,8 @@ async function getProduct(slug: string): Promise<ProductPageProps & { title: str
   );
 }
 
+
+const urlFor = (source: string) => urlBuilder(Client).image(source);
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const { slug } = params;

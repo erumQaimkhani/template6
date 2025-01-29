@@ -1,12 +1,13 @@
 
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { client } from "../../sanity/lib/client";
 import imageUrlBuilder from "@sanity/image-url";
 import Image from "next/image";
-import Pagination from "./pagination"; 
 import Link from "next/link";
 import Swal from "sweetalert2";
+import Checkout from "../contact/page";
 
 const builder = imageUrlBuilder(client);
 
@@ -37,8 +38,7 @@ interface Product {
 const Banner = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 4;
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -66,15 +66,6 @@ const Banner = () => {
     fetchProducts();
   }, []);
 
-  const indexOfLastProduct = currentPage * itemsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
   const addToCart = (product: Product) => {
     console.log("Product added to cart:", product);
   };
@@ -85,10 +76,19 @@ const Banner = () => {
       position: "top-start",
       icon: "success",
       title: `${product.title} added to cart`,
-      showConfirmButton: false,
+      showConfirmButton: true,
       timer: 1500,
     });
     addToCart(product);
+  };
+
+  const handleImageClick = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    setSelectedProduct(product);
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null);
   };
 
   if (loading) {
@@ -105,7 +105,7 @@ const Banner = () => {
         Our Products
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentProducts.map((product) => (
+        {products.map((product) => (
           <div
             key={product._id}
             className="bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden transform hover:scale-105"
@@ -120,7 +120,8 @@ const Banner = () => {
                         alt={product.title}
                         width={500}
                         height={300}
-                        className="w-full h-64 object-cover"
+                        className="w-full h-64 object-cover cursor-pointer"
+                        onClick={(e) => handleImageClick(e, product)}
                       />
                     ) : (
                       <div className="w-full h-64 flex items-center justify-center bg-gray-200">
@@ -169,15 +170,29 @@ const Banner = () => {
         ))}
       </div>
 
-      {/* Pagination */}
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        handlePageChange={handlePageChange}
-      />
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-6 max-w-lg w-full">
+            <h2 className="text-2xl font-bold mb-4">{selectedProduct.title}</h2>
+            <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
+            <p className="text-lg font-semibold text-gray-800">Price: ${selectedProduct.price}</p>
+            {selectedProduct.discountPercentage && (
+              <p className="text-sm text-red-500 mt-1">
+                Discount: {selectedProduct.discountPercentage}%
+              </p>
+            )}
+            <button
+              className="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-full hover:bg-indigo-700 transition-colors duration-300"
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
+          <Checkout />
+        </div>
+      )}
     </div>
   );
 };
 
 export default Banner;
-

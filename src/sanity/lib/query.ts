@@ -1,7 +1,16 @@
 
-const productQuery =
-`*[_typeof ==product]{
-  productImage, title,price,discountpercentage,description,inventory
-  
-  
-}`
+const query = `*[_type == "product"]{
+  productImage{
+    asset->{
+      url
+    }
+  },
+  title,
+  price,
+  discountpercentage,
+  description,
+  inventory,
+  slug
+}`;
+
+export { query };
